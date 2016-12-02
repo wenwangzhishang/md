@@ -1,7 +1,7 @@
 <template>
   <div id="product" class="product" v-show="showProduct">
 		<header class="fx hd">
-			<a class="pt back" @click.prevent="showProduct=false">~</a>
+			<a class="pt back" @click.prevent="close_layer">~</a>
 			<h1>请选择</h1>
 		</header>
 		<div class="weui-panel">
@@ -18,6 +18,7 @@
 </template>
 
 <script>
+import $ from 'zepto'
 export default {
 	name: "product",
 	props: ['showProduct'],
@@ -57,7 +58,7 @@ export default {
 	},
 	methods: {
 		close_layer:function(){
-			this.showProduct=false;
+			this.$emit('close_product')
 		},
 		pull_down: function(e) {
 			var cells = $(".insert_cells.show");
@@ -70,8 +71,8 @@ export default {
 			$(e.target).next().addClass('show')
 		},
 		get_info: function(e) {
-//			form.formdata.product = e.target.innerText;
-//			this.show=false;
+			this.$emit('change_product',e.target.innerText);
+			this.close_layer()
 		}
 	}
 }

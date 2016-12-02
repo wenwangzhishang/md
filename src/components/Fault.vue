@@ -1,7 +1,7 @@
 <template>
   <div id="fault" class="fault" v-show="showFault" v-cloak>
 		<header class="fx hd">
-			<a class="pt back" @click.prevent="showFault=false">~</a>
+			<a class="pt back" @click.prevent="close_layer">~</a>
 			<h1>请选择</h1>
 		</header>
 		<div class="weui-panel">
@@ -13,6 +13,7 @@
 </template>
 
 <script>
+import $ from 'zepto'
 export default {
 	name: "fault",
 	props: ['showFault'],
@@ -31,9 +32,12 @@ export default {
 		console.log('loading');
 	},
 	methods: {
+		close_layer:function(){
+			this.$emit('close_fault')
+		},
 		get_info: function(e) {
-//			form.formdata.product = e.target.innerText;
-//			this.show=false;
+			this.$emit('change_fault',e.target.innerText);
+			this.close_layer()
 		}
 	},
 	watch: {

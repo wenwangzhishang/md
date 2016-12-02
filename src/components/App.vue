@@ -14,7 +14,7 @@
     	<div class="weui-tab__panel">
             	<!-- item -->
 				<div class="weui-cells">
-	            	<a class="weui-cell weui-cell_access" @click.prevent="open_layer('product')">
+	            	<a class="weui-cell weui-cell_access" @click.prevent="show_product=true">
 	            		<div class="weui-cell__hd">
 		                    <p>产品类型*</p>
 		                </div>
@@ -23,7 +23,7 @@
 		                </div>
 		                <div class="weui-cell__ft"></div>
 		            </a>
-		            <a class="weui-cell weui-cell_access" @click.prevent="open_layer('fault')" v-show="show_repair" v-cloak>
+		            <a class="weui-cell weui-cell_access" @click.prevent="show_fault=true" v-show="show_repair" v-cloak>
 		                <div class="weui-cell__hd">
 		                    <p>故障类型*</p>
 		                </div>
@@ -71,7 +71,7 @@
 		                    <input class="weui-input" type="tel" pattern="[0-9]*" placeholder="请输入联系人电话" v-model="formsdata.user_mobile">
 		                </div>
 		            </div>
-		            <a class="weui-cell weui-cell_access" @click.prevent="open_layer('place')">
+		            <a class="weui-cell weui-cell_access" @click.prevent="show_place=true">
 	            		<div class="weui-cell__hd">
 		                    <p>所在地区*</p>
 		                </div>
@@ -113,7 +113,7 @@
 	        	</div>
 				<!-- item -->
 				<div class="weui-cells">
-	            	<a class="weui-cell weui-cell_access" @click.prevent="open_layer('date')">
+	            	<a class="weui-cell weui-cell_access" @click.prevent="show_date=true">
 	            		<div class="weui-cell__hd">
 		                    <p>预约时间*</p>
 		                </div>
@@ -129,16 +129,15 @@
 			<a href="#" class="weui-btn weui-btn_primary">注册并提交</a>
 		</div>
 		<!--<hello></hello>-->
-		<product :show-product.sync="show_product"></product>
-		 <fault :show-fault.sync="show_fault"></fault>
-    <place :show-place.sync="show_place"></place>
+		<product :show-product="show_product" v-on:close_product="show_product=false" v-on:change_product="change_product"></product>
+		<fault :show-fault="show_fault" v-on:close_fault="show_fault=false" v-on:change_fault="change_fault"></fault>
+    <place :show-place="show_place" v-on:close_place="show_place=false" v-on:change_place="change_place"></place>
     <!--<date></date>-->
   </div>
 </template>
 
 <script>
-var $ = require('zepto');
-//import Hello from './Hello'
+import $ from 'zepto'
 import Product from './Product'
 import Fault from './Fault'
 import Place from './Place'
@@ -147,7 +146,6 @@ import Place from './Place'
 export default {
   name: 'app',
   components: {
-//	Hello,
     Product,
     Fault,
     Place
@@ -175,50 +173,19 @@ export default {
 			}
     }
   },
-//events:{
-//	open_layer:function(e){
-//		var self=this;
-//			switch (e){
-//				case 'product':self.show=true;break;
-//				case 'fault':self.show=true;break;
-//				case 'place':self.show=true;break;
-////				case 'date':self.show=true;break;
-//			}
-//		},
-//		close_layer:function(e){
-//			var self=this;
-//			switch (e){
-//				case 'product':self.show=false;break;
-//				case 'fault':self.show=false;break;
-//				case 'place':self.show=false;break;
-////				case 'date':self.show=false;break;
-//			}
-//		},
-		methods: {
-			open_layer:function(e){
+	methods: {
+			init: function() {},
+			change_product:function(val){
 				var self=this;
-//				if(e=="product"){
-//					self.show_product=true;
-//					console.log(self.show_product)
-//				}
-				switch (e){
-					case 'product':self.show_product=true;break;
-					case 'fault':self.show_fault=true;break;
-					case 'place':self.show_place=true;break;
-	//				case 'date':self.show_date=true;break;
-				}
+				this.formsdata.product=val
 			},
-			close_layer:function(e){
+			change_fault:function(val){
 				var self=this;
-				switch (e){
-					case 'product':self.show_product=false;break;
-					case 'fault':self.show_fault=false;break;
-					case 'place':self.show_place=false;break;
-	//				case 'date':self.show_date=false;break;
-				}
+				this.formsdata.fault=val
 			},
-			init: function() {
-				
+			change_place:function(val){
+				var self=this;
+				this.formsdata.user_place=val
 			},
 			check: function(index) {
 				if(index == 1) {
@@ -230,14 +197,18 @@ export default {
 				}
 			},
 			submit:function(){
-				
+				this.$http.get("http://baidu.com").then(function(res){
+					
+				},function(res){
+					alert("err")
+				})
+			}
+		},
+		watch: {
+			fault_des:function(val){
+				$(".weui-textarea-counter>span").text(val.length)
 			}
 		}
-//		watch: {
-//			fault_des:function(val){
-//				$(".weui-textarea-counter>span").text(val.length)
-//			}
-//		}
 }
 </script>
 

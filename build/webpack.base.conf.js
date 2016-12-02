@@ -34,7 +34,7 @@ module.exports = {
   },
   externals: {
     zepto: 'window.$'
-	},
+  },
   module: {
     loaders: [
       {
