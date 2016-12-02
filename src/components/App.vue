@@ -14,7 +14,7 @@
     	<div class="weui-tab__panel">
             	<!-- item -->
 				<div class="weui-cells">
-	            	<a class="weui-cell weui-cell_access" @click.prevent="show_product=true">
+	            	<a class="weui-cell weui-cell_access" @click.prevent="open_product">
 	            		<div class="weui-cell__hd">
 		                    <p>产品类型*</p>
 		                </div>
@@ -23,7 +23,7 @@
 		                </div>
 		                <div class="weui-cell__ft"></div>
 		            </a>
-		            <a class="weui-cell weui-cell_access" @click.prevent="show_fault=true" v-show="show_repair" v-cloak>
+		            <a class="weui-cell weui-cell_access" @click.prevent="open_fault" v-show="show_repair" v-cloak>
 		                <div class="weui-cell__hd">
 		                    <p>故障类型*</p>
 		                </div>
@@ -34,7 +34,7 @@
 		            </a>
 		            <div class="weui-cell" v-show="show_repair" v-cloak>
 		                <div class="weui-cell__bd">
-		                    <textarea class="weui-textarea" placeholder="请输入故障描述" rows="3" v-model="fault_des"></textarea>
+		                    <textarea class="weui-textarea" placeholder="请输入故障描述" rows="3" v-model="fault_des" maxlength="200"></textarea>
 		                    <div class="weui-textarea-counter"><span>0</span>/200</div>
 		                </div>
 		            </div>
@@ -49,13 +49,13 @@
 		                    <input class="weui-input" type="tel" placeholder="请输入您的手机号" v-model="formsdata.mobile">
 		                </div>
 		                <div class="weui-cell__ft">
-		                    <button class="weui-vcode-btn">发送验证码</button>
+		                    <button class="weui-vcode-btn" v-text="vcode_state" @click="send_vcode"></button>
 		                </div>
 		            </div>
 		            <div class="weui-cell">
 		                <div class="weui-cell__hd"><label class="weui-label">验证码</label></div>
 		                <div class="weui-cell__bd">
-		                    <input class="weui-input" type="number" placeholder="请输入短信中的验证码" v-model="formsdata.vcode">
+		                    <input class="weui-input" type="tel" placeholder="请输入短信中的验证码" v-model="formsdata.vcode">
 		                </div>
 		                <div class="weui-cell__ft"></div>
 		            </div>
@@ -71,7 +71,7 @@
 		                    <input class="weui-input" type="tel" pattern="[0-9]*" placeholder="请输入联系人电话" v-model="formsdata.user_mobile">
 		                </div>
 		            </div>
-		            <a class="weui-cell weui-cell_access" @click.prevent="show_place=true">
+		            <a class="weui-cell weui-cell_access" @click.prevent="open_place">
 	            		<div class="weui-cell__hd">
 		                    <p>所在地区*</p>
 		                </div>
@@ -158,11 +158,11 @@ export default {
 	  	show_fault:false,
 	  	show_place:false,
 //    	show_date:false,
-      fault_des:'',
+      fault_des:'',//故障描述
+      vcode_state:'发送验证码',
 			formsdata:{
 				product:'',//产品类型
 				fault:'',//故障类型
-	//			fault_des:'',//故障描述
 				mobile:'',//手机号
 				vcode:'',//验证码
 				user_name:'',//联系人姓名
@@ -170,11 +170,29 @@ export default {
 				user_place:'',//所在地区
 				user_location:'',//详细地址
 				order_date:''//预约时间
-			}
+			},
+			api:{
+	    	submit:'',
+	    	vcode:''
+	    }
     }
   },
 	methods: {
 			init: function() {},
+			open_product:function(){
+				this.show_product=true
+			},
+			open_fault:function(){
+				if(this.formsdata.product){
+					document.documentElement.style.overflow='hidden';
+					this.show_fault=true;
+				}else{
+					alert("请先填写产品")
+				}
+			},
+			open_place:function(){
+				this.show_place=true
+			},
 			change_product:function(val){
 				var self=this;
 				this.formsdata.product=val
@@ -196,8 +214,34 @@ export default {
 					this.show_pretend = false
 				}
 			},
+			send_vcode:function(){
+				if(this.formsdata.mobile.length==11){
+					if(this.vcode_state=="发送验证码"){
+							//				this.$http.post(this.api.submit,{}).then(function(res){
+					this.vcode_track()
+//				},function(res){
+//					alert("err")
+//				})
+				}
+				}else{
+					alert('手机格式有误')
+				}
+			},
+			vcode_track:function(){
+				var self=this;
+				var t=60;
+				var timer=setInterval(function(){
+					if(t>0){
+						t--;
+						self.vcode_state="重新发送("+t+')';
+					}else{
+						self.vcode_state="请发送验证码";
+						clearInterval(timer)
+					}
+				},1000)
+			},
 			submit:function(){
-				this.$http.get("http://baidu.com").then(function(res){
+				this.$http.post(this.api.submit).then(function(res){
 					
 				},function(res){
 					alert("err")
