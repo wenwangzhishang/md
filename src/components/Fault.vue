@@ -1,12 +1,12 @@
 <template>
-  <div id="fault" class="fault" v-show="showFault" v-cloak>
+  <div id="fault" class="fault" v-show="faultState" v-cloak>
 		<header class="fx hd">
 			<a class="pt back" @click.prevent="close_layer">~</a>
 			<h1>请选择</h1>
 		</header>
 		<div class="weui-panel">
 			<ul class="cells">
-				<li v-for="(big_type,index) of big_types" v-text="big_type" @click="get_info" v-cloak></li>
+				<li v-for="(sup_type,index) of faultData" v-text="sup_type.trouble_name" :data-id="sup_type.trouble_id" @click="get_info" v-cloak></li>
 			</ul>
 		</div>
 	</div>
@@ -16,27 +16,26 @@
 import $ from 'zepto'
 export default {
 	name: "fault",
-	props: ['showFault'],
+	props: ['faultState','faultData'],
 	data () {
 		return {
-			big_types: [
-				'通电跳闸',
-				'自动开关机',
-				'内机异味',
-				'故障灯亮起',
-				'物联网连接故障'
-			]
+			
 		}
 	},
 	mounted: function() {
-		console.log('loading');
 	},
 	methods: {
 		close_layer:function(){
 			this.$emit('close_fault')
 		},
 		get_info: function(e) {
-			this.$emit('change_fault',e.target.innerText);
+			var pro_name=$(e.target).text();
+			var pro_id=$(e.target).attr("data-id");
+			var pro_data={
+				name:pro_name,
+				id:pro_id
+			};
+			this.$emit('change_fault', pro_data);
 			this.close_layer()
 		}
 	},

@@ -1,12 +1,12 @@
 <template>
-  <div id="place" class="place" v-show="showPlace" v-cloak>
+  <div id="place" class="place" v-show="placeState" v-cloak>
 		<header class="fx hd">
 			<a class="pt back" @click.prevent="close_layer">~</a>
 			<h1>请选择</h1>
 		</header>
 		<div class="weui-panel">
 			<ul class="cells">
-				<li v-for="(big_type,index) of big_types" v-text="big_type" @click="get_info" v-cloak></li>
+				<li v-for="(sub_type,index) of placeData" v-text="sub_type.area_name" :data-id="sub_type.area_id" :data-level="sub_type.level" @click="change_lists" v-cloak></li>
 			</ul>
 		</div>
 	</div>
@@ -14,47 +14,62 @@
 
 <script>
 import $ from 'zepto'
+
 export default {
   name: 'place',
-  props:['showPlace'],
+  props:['placeState','placeData'],
   data () {
     return {
-			big_types: [
-				'北京市',
-				'天津市',
-				'河北省',
-				'山西省',
-				'内蒙古自治区',
-				'辽宁省',
-				'吉林省',
-				'黑龙江省',
-				'上海市',
-				'江苏省',
-				'浙江省',
-				'安徽省',
-				'福建省',
-				'江西省',
-				'山东省',
-				'河南省',
-				'湖北省',
-				'湖南省'
-			]
+    	pro_data:{
+    		name:'',
+    		id:''
+    	},
+    	api:{
+//				service:'http://192.168.0.71:8080/ShiTengApi',
+				service:'http://weixin.56365.com/ShiTengApi/',
+	    	place:'/service/getAreaList.do'
+	    }
     }
   },
   mounted: function() {
-		console.log('loading');
+//	this.place_data=this.placeData
 	},
 	methods: {
 		close_layer:function(){
 			this.$emit('close_place')
 		},
-		get_info: function(e) {
-			this.$emit('change_place',e.target.innerText);
+		change_lists:function(e){
+			var level=$(e.target).attr("data-level");
+			var pro_name=$(e.target).text();
+			this.pro_data.name+=pro_name;
+			this.pro_data.id=$(e.target).attr("data-id");
+			if(level<4){
+				this.get_place_lists();
+			}else{
+				this.get_info();
+			}
+		},
+		get_place_lists:function(){//获取地
+			this.$http.get(this.api.service+this.api.place,{
+				params:{
+					parent_id:this.pro_data.id
+				}
+			}).then(function(res){
+				if(res.data.rtn_no=="100"){
+						this.placeData=res.data.result;
+				}else{
+					alert(res.data.rtn_msg)
+				}
+			},function(res){
+				console.log(res)
+			})
+		},
+		get_info:function(){
+			this.$emit('change_place', this.pro_data);
 			this.close_layer()
 		}
 	},
-	watch: {
-
+	computed:{
 	}
 }
 </script>

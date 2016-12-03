@@ -1,15 +1,15 @@
 <template>
-  <div id="product" class="product" v-show="showProduct">
+  <div id="product" class="product" v-show="productState">
 		<header class="fx hd">
 			<a class="pt back" @click.prevent="close_layer">~</a>
 			<h1>请选择</h1>
 		</header>
 		<div class="weui-panel">
 			<ul class="cells">
-				<li v-for="(big_type,index) of big_types" v-cloak>
-					<p class="title" v-text="big_type" @click.self="pull_down"></p>
+				<li v-for="(sup_type,index) of productData" v-cloak>
+					<p class="title" v-text="sup_type.pro_name" :data-id="sup_type.pro_id" @click.self="pull_down"></p>
 					<ul class="insert_cells">
-        		<li v-for="(sm_type,index) of sm_types" v-text="sm_type" @click="get_info"></li>
+        		<li v-for="(sub_type,index) of sup_type.bean" v-text="sub_type.pro_name" :data-id="sub_type.pro_id" @click="get_info"></li>
         	</ul>
 				</li>
 			</ul>
@@ -21,11 +21,10 @@
 import $ from 'zepto'
 export default {
 	name: "product",
-	props: ['showProduct'],
+	props: ['productState','productData'],
 	data() {
 		return {
 			formdata:{
-				show:false,
 				product:'',//产品类型
 				fault:'',//故障类型
 				fault_des:'',//故障描述
@@ -36,25 +35,10 @@ export default {
 				user_place:'',//所在地区
 				user_location:'',//详细地址
 				order_date:''//预约时间
-			},
-			big_types: [
-				'空调',
-				'风扇',
-				'冰箱',
-				'洗衣机',
-				'热水器'
-			],
-			sm_types: [
-				'璧扇',
-				'吊扇',
-				'换气扇',
-				'金属扇',
-				'塑料扇'
-			]
+			}
 		}
 	},
 	mounted: function() {
-		
 	},
 	methods: {
 		close_layer:function(){
@@ -71,7 +55,13 @@ export default {
 			$(e.target).next().addClass('show')
 		},
 		get_info: function(e) {
-			this.$emit('change_product',e.target.innerText);
+			var pro_name=$(e.target).text();
+			var pro_id=$(e.target).attr("data-id");
+			var pro_data={
+				name:pro_name,
+				id:pro_id
+			};
+			this.$emit('change_product',pro_data);
 			this.close_layer()
 		}
 	}
@@ -87,8 +77,6 @@ export default {
 	width: 100%;
 	height: 100%;
 	background-color: #fff;
-	overflow-y: scroll;
-	-webkit-overflow-scrolling: touch;
 	header {
 		z-index: 999;
 		width: 100%;
