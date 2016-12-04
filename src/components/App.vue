@@ -124,11 +124,12 @@
 
 <script>
 import $ from 'jquery'
+//import attachFastClick from 'fastclick'
+//attachFastClick(document.body)
 import Product from './Product'
 import Fault from './Fault'
 import Place from './Place'
 import Date from './Date'
-
 export default {
   name: 'app',
   components: {
@@ -290,12 +291,47 @@ export default {
 				},1000)
 			},
 			submit:function(){
-				console.log(this.formsdata.status.name);
 				if(this.formsdata.status.name=='需要安装'){
 					this.formsdata.status.val='0'
 				}else{
 					this.formsdata.status.val='1'
 				}
+				if(this.formsdata.mobile!=''){
+					if(this.formsdata.vcode!=''){
+						if(this.formsdata.product.id!=''){
+							if(this.formsdata.user_name!=''){
+								if(this.formsdata.user_mobile!=''){
+									if(this.formsdata.user_place.id!=''){
+										if(this.formsdata.user_address!=''){
+											if(this.formsdata.order_date!=''){
+												this.post()
+						}else{
+							alert("请选择预定时间")
+						}
+						}else{
+							alert("请填写详细地址")
+						}
+						}else{
+							alert("请选择所在地区")
+						}
+						}else{
+							alert("请填写联系人电话")
+						}
+						}else{
+							alert("请填写联系人姓名")
+						}
+						}else{
+							alert("请选择产品类型")
+						}
+					}else{
+						alert("请输入验证码")
+					}
+				}else{
+					alert("请填写手机号")
+				};
+				
+			},
+			post:function(){
 				var post_data={
 					mobile:this.formsdata.mobile,	//是	string	手机号
 					Verifi_Code:this.formsdata.vcode,//是	string	验证码
@@ -308,7 +344,7 @@ export default {
 					detailaddress:this.formsdata.user_address,	//是	string	详细地址
 					status:this.formsdata.status.val,	//是	string	物流状态 0：需要安装1：货未到预约安装（默认为””）
 					style:this.formsdata.type,//是	string	0：报修1：报装
-					appointtime:this.formsdata.order_date
+					appointtime:this.formsdata.order_date//预定时间
 				};
 				this.$http.post(this.api.service+this.api.submit,post_data).then(function(res){
 					if(res.data.rtn_no==100){
@@ -317,7 +353,7 @@ export default {
 							alert(res.data.rtn_msg)
 						}
 				},function(res){
-					alert("err")
+					alert("系统错误，请刷新")
 				})
 			}
 		},
