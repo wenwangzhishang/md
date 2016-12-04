@@ -1,25 +1,32 @@
 <template>
   <div id="fault" class="fault" v-show="faultState" v-cloak>
-		<header class="fx hd">
-			<a class="pt back" @click.prevent="close_layer">~</a>
+  	<div class="scroll">
+  		<header class="fx hd">
+			<a class="pt back" @click.prevent="close_layer"></a>
 			<h1>请选择</h1>
 		</header>
 		<div class="weui-panel">
 			<ul class="cells">
-				<li v-for="(sup_type,index) of faultData" v-text="sup_type.trouble_name" :data-id="sup_type.trouble_id" @click="get_info" v-cloak></li>
+				<li v-for="(sup_type,index) of data" v-text="sup_type.trouble_name" :data-id="sup_type.trouble_id" @click="get_info" v-cloak></li>
 			</ul>
 		</div>
+  	</div>
 	</div>
 </template>
 
 <script>
-import $ from 'zepto'
+import $ from 'jquery'
 export default {
 	name: "fault",
-	props: ['faultState','faultData'],
+	props: ['faultState','productId'],
 	data () {
 		return {
-			
+			data:[],
+			api:{
+				service:'http://139.196.26.165/ShiTengApi/',//测试
+//				service:'http://weixin.56365.com/ShiTengApi/',
+	    	fault:'/service/trouble.do'
+			}
 		}
 	},
 	mounted: function() {
@@ -28,6 +35,21 @@ export default {
 		close_layer:function(){
 			this.$emit('close_fault')
 		},
+		init1:function(){//获取故障类型
+				this.$http.get(this.api.service+this.api.fault,{
+					params:{
+						pro_id:this.productId
+					}
+				}).then(function(res){
+					if(res.data.rtn_no==100){
+							this.data=res.data.result;
+					}else{
+						alert(res.data.rtn_msg)
+					}
+				},function(res){
+					console.log(res)
+				})
+			},
 		get_info: function(e) {
 			var pro_name=$(e.target).text();
 			var pro_id=$(e.target).attr("data-id");
@@ -40,7 +62,11 @@ export default {
 		}
 	},
 	watch: {
-
+		faultState:function(val){
+			if(val){
+				this.init1()
+			}
+		}
 	}
 }
 </script>
@@ -52,7 +78,17 @@ export default {
 	left: 0;
 	width: 100%;
 	height: 100%;
+	overflow-x: hidden;
 	background-color: #fff;
+	.scroll{
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: auto;
+		overflow-x: hidden;
+		overflow-y: scroll;
+		-webkit-overflow-scrolling: touch;
 	header {
 		z-index: 999;
 		width: 100%;
@@ -71,7 +107,9 @@ export default {
 			width: 45px;
 			height: 100%;
 			line-height: 45px;
-			color: #fff
+			color: #fff;
+			background: url(../assets/images/back.png) no-repeat center;
+				background-size: 70%;
 		}
 	}
 	.weui-panel {
@@ -95,6 +133,7 @@ export default {
 			    background-color: #fff
 				}
 			}
+		}
 	}
 }
 </style>

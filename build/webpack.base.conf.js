@@ -33,7 +33,7 @@ module.exports = {
     fallback: [path.join(__dirname, '../node_modules')]
   },
   externals: {
-    zepto: 'window.$'
+    jquery: 'window.$'
   },
   module: {
     loaders: [

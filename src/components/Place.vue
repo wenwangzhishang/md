@@ -1,47 +1,65 @@
 <template>
   <div id="place" class="place" v-show="placeState" v-cloak>
-		<header class="fx hd">
-			<a class="pt back" @click.prevent="close_layer">~</a>
+  	<div class="scroll">
+  		<header class="fx hd">
+			<a class="pt back" @click.prevent="close_layer"></a>
 			<h1>请选择</h1>
 		</header>
 		<div class="weui-panel">
 			<ul class="cells">
-				<li v-for="(sub_type,index) of placeData" v-text="sub_type.area_name" :data-id="sub_type.area_id" :data-level="sub_type.level" @click="change_lists" v-cloak></li>
+				<li v-for="(sub_type,index) of data" v-text="sub_type.area_name" :data-id="sub_type.area_id" :data-level="sub_type.level" @click="change_lists" v-cloak></li>
 			</ul>
 		</div>
+  	</div>
 	</div>
 </template>
 
 <script>
-import $ from 'zepto'
+import $ from 'jquery'
 
 export default {
   name: 'place',
-  props:['placeState','placeData'],
+  props:['placeState'],
   data () {
     return {
+    	data:[],
     	pro_data:{
     		name:'',
     		id:''
     	},
     	api:{
-//				service:'http://192.168.0.71:8080/ShiTengApi',
-				service:'http://weixin.56365.com/ShiTengApi/',
+					service:'http://139.196.26.165/ShiTengApi/',//测试
+//				service:'http://weixin.56365.com/ShiTengApi/',
 	    	place:'/service/getAreaList.do'
 	    }
     }
   },
   mounted: function() {
-//	this.place_data=this.placeData
 	},
 	methods: {
 		close_layer:function(){
 			this.$emit('close_place')
 		},
+		init1:function(){//获取地区
+				this.$http.get(this.api.service+this.api.place,{
+					params:{
+						parent_id:''
+					}
+				}).then(function(res){
+					if(res.data.rtn_no=="100"){
+							this.data=res.data.result;
+							this.pro_data.name='';//qingkong
+					}else{
+						alert(res.data.rtn_msg)
+					}
+				},function(res){
+					console.log(res)
+				})
+			},
 		change_lists:function(e){
-			var level=$(e.target).attr("data-level");
-			var pro_name=$(e.target).text();
-			this.pro_data.name+=pro_name;
+			var level=$(e.target).attr("data-level");//层级
+			var pro_name=$(e.target).text();//文字
+			this.pro_data.name+=pro_name;//文字积累
 			this.pro_data.id=$(e.target).attr("data-id");
 			if(level<4){
 				this.get_place_lists();
@@ -56,7 +74,7 @@ export default {
 				}
 			}).then(function(res){
 				if(res.data.rtn_no=="100"){
-						this.placeData=res.data.result;
+						this.data=res.data.result;
 				}else{
 					alert(res.data.rtn_msg)
 				}
@@ -64,12 +82,18 @@ export default {
 				console.log(res)
 			})
 		},
-		get_info:function(){
+		get_info:function(){	
 			this.$emit('change_place', this.pro_data);
 			this.close_layer()
 		}
 	},
-	computed:{
+//	computed:{
+	watch:{
+		placeState:function(val){
+			if(val){
+				this.init1()
+			}
+		}
 	}
 }
 </script>
@@ -82,7 +106,17 @@ export default {
 	left: 0;
 	width: 100%;
 	height: 100%;
+	overflow-x: hidden;
 	background-color: #fff;
+	.scroll{
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: auto;
+		overflow-x: hidden;
+		overflow-y: scroll;
+		-webkit-overflow-scrolling: touch;
 	header {
 		z-index: 999;
 		width: 100%;
@@ -102,6 +136,8 @@ export default {
 			height: 100%;
 			line-height: 45px;
 			color: #fff;
+			background: url(../assets/images/back.png) no-repeat center;
+				background-size: 70%;
 		}
 	}
 	.weui-panel {
@@ -126,5 +162,6 @@ export default {
 				}
 			}
 		}
+	}
 }
 </style>

@@ -1,40 +1,36 @@
 <template>
-  <div id="product" class="product" v-show="productState">
-		<header class="fx hd">
-			<a class="pt back" @click.prevent="close_layer">~</a>
+  <div id="product" class="product" v-show="productState" v-cloak>
+  	<div class="scroll">
+  		<header class="fx hd">
+			<a class="pt back" @click.prevent="close_layer"></a>
 			<h1>请选择</h1>
-		</header>
-		<div class="weui-panel">
-			<ul class="cells">
-				<li v-for="(sup_type,index) of productData" v-cloak>
-					<p class="title" v-text="sup_type.pro_name" :data-id="sup_type.pro_id" @click.self="pull_down"></p>
-					<ul class="insert_cells">
-        		<li v-for="(sub_type,index) of sup_type.bean" v-text="sub_type.pro_name" :data-id="sub_type.pro_id" @click="get_info"></li>
-        	</ul>
-				</li>
-			</ul>
-		</div>
+			</header>
+			<div class="weui-panel">
+				<ul class="cells">
+					<li v-for="(sup_type,index) of data" v-cloak>
+						<p class="title" v-text="sup_type.pro_name" :data-id="sup_type.pro_id" @click.self="pull_down"></p>
+						<ul class="insert_cells">
+	        		<li v-for="(sub_type,index) of sup_type.bean" v-text="sub_type.pro_name" :data-id="sub_type.pro_id" @click="get_info"></li>
+	        	</ul>
+					</li>
+				</ul>
+			</div>
+  	</div>
 	</div>
 </template>
 
 <script>
-import $ from 'zepto'
+import $ from 'jquery'
 export default {
-	name: "product",
-	props: ['productState','productData'],
+	name: "product", 
+	props: ['productState'],
 	data() {
 		return {
-			formdata:{
-				product:'',//产品类型
-				fault:'',//故障类型
-				fault_des:'',//故障描述
-				mobile:'',//手机号
-				vcode:'',//验证码
-				user_name:'',//联系人姓名
-				user_mobile:'',//联系人电话
-				user_place:'',//所在地区
-				user_location:'',//详细地址
-				order_date:''//预约时间
+			data:[],
+			api:{
+				service:'http://139.196.26.165/ShiTengApi/',//测试
+//				service:'http://weixin.56365.com/ShiTengApi/',
+	    	product:'/service/product.do',
 			}
 		}
 	},
@@ -43,6 +39,18 @@ export default {
 	methods: {
 		close_layer:function(){
 			this.$emit('close_product')
+		},
+		init1:function(){//获取产品类型
+				this.$http.get(this.api.service+this.api.product).then(function(res){
+					if(res.data.rtn_no==100){
+							this.data=res.data.result;
+//							this.formsdata.fault.name='';
+					}else{
+						alert(res.data.rtn_msg)
+					}
+				},function(res){
+					console.log(res)
+				})
 		},
 		pull_down: function(e) {
 			var cells = $(".insert_cells.show");
@@ -58,11 +66,18 @@ export default {
 			var pro_name=$(e.target).text();
 			var pro_id=$(e.target).attr("data-id");
 			var pro_data={
-				name:pro_name,
-				id:pro_id
+					name:pro_name,
+					id:pro_id
 			};
 			this.$emit('change_product',pro_data);
 			this.close_layer()
+		}
+	},
+	watch:{
+		productState:function(val){
+			if(val){
+				this.init1()
+			}
 		}
 	}
 }
@@ -76,28 +91,40 @@ export default {
 	left: 0;
 	width: 100%;
 	height: 100%;
+	overflow-x: hidden;
 	background-color: #fff;
-	header {
-		z-index: 999;
+	.scroll{
+		position: absolute;
+		top: 0;
+		left: 0;
 		width: 100%;
-		height: 45px;
-		overflow: hidden;
-		text-align: center;
-		background-color: #333;
-		color: #fff;
-		h1{
-			font-size: 20px;
-			line-height: 45px;
-		}
-		.back{
-			top: 0;
-			left: 0;
-			width: 45px;
-			height: 100%;
-			line-height: 45px;
+		height: auto;
+		overflow-x: hidden;
+		overflow-y: scroll;
+		-webkit-overflow-scrolling: touch;
+		header {	
+			z-index: 999;
+			width: 100%;
+			height: 45px;
+			overflow: hidden;
+			text-align: center;
+			background-color: #333;
 			color: #fff;
+			h1{
+				font-size: 20px;
+				line-height: 45px;
+			}
+			.back{
+				top: 0;
+				left: 0;
+				width: 45px;
+				height: 100%;
+				line-height: 45px;
+				color: #fff;
+				background: url(../assets/images/back.png) no-repeat center;
+				background-size: 70%;
+			}
 		}
-	}
 	.weui-panel {
 	    padding-top: 45px;
 	    padding-bottom: 0;
@@ -148,6 +175,7 @@ export default {
 						padding: 10px 15px;
 					}
 				}
+			}
 			}
 		}	
 }

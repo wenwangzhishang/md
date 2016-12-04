@@ -76,7 +76,7 @@
 		                    <p>所在地区*</p>
 		                </div>
 		                <div class="weui-cell__bd">
-		                    <textarea class="weui-textarea" placeholder="..." readonly="readonly" v-model="formsdata.user_place.name"></textarea>
+		                    <textarea class="weui-textarea" placeholder="" readonly="readonly" v-model="formsdata.user_place.name"></textarea>
 		                </div>
 		                <div class="weui-cell__ft"></div>
 		            </a>
@@ -86,30 +86,17 @@
 		                    <input class="weui-input" type="text" placeholder="请输入详细地址" v-model="formsdata.user_address">
 		                </div>
 		            </div>
-		            <div class="weui-cell" v-show="state.pretend" v-cloak>
-		                <div class="weui-cell__hd"><label class="weui-label">物流状态*</label></div>
+		            <div class="weui-cell weui-cell_select weui-cell_select-after" v-show="state.pretend" v-cloak>
+		                <div class="weui-cell__hd">
+		                    <label for="" class="weui-label">物流状态*</label>
+		                </div>
 		                <div class="weui-cell__bd">
-		                    <input class="weui-input" type="tel" pattern="[0-9]*" placeholder="请输入详细地址">
+		                    <select class="weui-select" name="select2" v-model="formsdata.status.name">
+		                        <option>需要安装</option>
+		                        <option>货到付款预约安装</option>
+		                    </select>
 		                </div>
 		            </div>
-		            <label class="weui-cell weui-check__label" for="x11" v-show="state.pretend" v-cloak>
-		                <div class="weui-cell__bd">
-		                    <p>需要安装</p>
-		                </div>
-		                <div class="weui-cell__ft">
-		                    <input type="radio" class="weui-check" name="radio1" id="x11">
-		                    <span class="weui-icon-checked"></span>
-		                </div>
-		            </label>
-		            <label class="weui-cell weui-check__label" for="x12" v-show="state.pretend" v-cloak>
-		                <div class="weui-cell__bd">
-		                    <p>货到付款预约安装</p>
-		                </div>
-		                <div class="weui-cell__ft">
-		                    <input type="radio" class="weui-check" name="radio1" id="x12">
-		                    <span class="weui-icon-checked"></span>
-		                </div>
-		            </label>
 	        	</div>
 				<!-- item -->
 				<div class="weui-cells">
@@ -118,7 +105,7 @@
 		                    <p>预约时间*</p>
 		                </div>
 		                <div class="weui-cell__bd">
-		                    <input type="" name="" class="weui-input" placeholder="请选择预约服务时间" readonly="true" v-model="this.formsdata.order_date">
+		                    <input type="" name="" class="weui-input" placeholder="请选择预约服务时间" readonly="true" v-model="formsdata.order_date">
 		                </div>
 		                <div class="weui-cell__ft"></div>
 		            </a>
@@ -128,15 +115,15 @@
 		<div class="fx ft">
 			<a href="#" class="weui-btn weui-btn_primary" @click="submit">注册并提交</a>
 		</div>
-		<product :product-state="sub.product.state" :product-data="sub.product.data" v-on:close_product="sub.product.state=false" v-on:change_product="change_product"></product>
-		<fault :fault-state="sub.fault.state" :fault-data="sub.fault.data" v-on:close_fault="sub.fault.state=false" v-on:change_fault="change_fault"></fault>
-    <place :place-state="sub.place.state" :place-data.async="sub.place.data" v-on:close_place="sub.place.state=false" v-on:change_place="change_place"></place>
+		<product :product-state="sub.product.state" v-on:close_product="sub.product.state=false" v-on:change_product="change_product"></product>
+		<fault :fault-state="sub.fault.state" :product-id="formsdata.product.id" v-on:close_fault="sub.fault.state=false" v-on:change_fault="change_fault"></fault>
+    <place :place-state="sub.place.state" v-on:close_place="sub.place.state=false" v-on:change_place="change_place"></place>
     <date :date-state="sub.date.state" v-on:close_date="sub.date.state=false" v-on:change_date="change_date"></date>
   </div>
 </template>
 
 <script>
-import $ from 'zepto'
+import $ from 'jquery'
 import Product from './Product'
 import Fault from './Fault'
 import Place from './Place'
@@ -147,8 +134,8 @@ export default {
   components: {
     Product,
     Fault,
-    Date,
-    Place
+  	Place,
+    Date
   },
   data () {
     return {
@@ -190,16 +177,20 @@ export default {
 				vcode:'',//验证码
 				user_name:'',//联系人姓名
 				user_mobile:'',//联系人电话
-				user_place:{
+				user_place:{//所在地区
 					name:'',
 					id:''
-				},//所在地区
+				},
 				user_address:'',//详细地址
-				order_date:''//预约时间
+				order_date:'',//预约时间
+				status:{
+					name:'需要安装',
+					val:'0'
+				},//是否需要安装
 			},
 			api:{
-//				service:'http://192.168.0.71:8080/ShiTengApi',
-				service:'http://weixin.56365.com/ShiTengApi/',
+				service:'http://139.196.26.165/ShiTengApi/',//测试
+//				service:'http://weixin.56365.com/ShiTengApi/',
 	    	submit:'/service/repaiInstall.do',
 	    	product:'/service/product.do',
 	    	fault:'/service/trouble.do',
@@ -213,93 +204,54 @@ export default {
 //					document.documentElement.style.overflow='hidden';
 			},
 			open_product:function(){
-				this.get_product_lists();
+					this.sub.product.state=true;
+					document.documentElement.style.overflow='hidden';
 			},
 			open_fault:function(){
 				if(this.formsdata.product.name&&this.formsdata.product.id){
-					this.get_fault_lists();
+					this.sub.fault.state=true;			
+					document.documentElement.style.overflow='hidden';
 				}else{
 					alert("请先填写产品")
 				}
 			},
 			open_place:function(){
-				this.get_place_lists();
+					this.sub.place.state=true;
+				document.documentElement.style.overflow='hidden';
 			},
 			open_date:function(){
-//				this.get_place_lists();
-				this.sub.date.state=true
+				this.sub.date.state=true;
+				document.documentElement.style.overflow='hidden';
 			},
 			change_product:function(data){
+				document.documentElement.style.overflow='auto';
 				this.formsdata.product.name=data.name;
 				this.formsdata.product.id=data.id;
 			},
 			change_fault:function(data){
+				document.documentElement.style.overflow='auto';
 				this.formsdata.fault.name=data.name;
 				this.formsdata.fault.id=data.id;
 			},
 			change_place:function(data){
+				document.documentElement.style.overflow='auto';
 				this.formsdata.user_place.name=data.name;
 				this.formsdata.user_place.id=data.id;
 			},
 			change_date:function(data){
-//				this.formsdata.user_place.name=data.name;
-//				this.formsdata.user_place.id=data.id;
-			},
-			get_product_lists:function(){//获取产品类型
-				this.$http.get(this.api.service+this.api.product).then(function(res){
-					if(res.data.rtn_no==100){
-							this.sub.product.data=res.data.result;
-							this.sub.product.state=true;
-							this.formsdata.fault.name='';
-					}else{
-						alert(res.data.rtn_msg)
-					}
-				},function(res){
-					console.log(res)
-				})
-			},
-			get_fault_lists:function(){//获取故障类型
-				console.log(this.formsdata.fault.id);
-				this.$http.get(this.api.service+this.api.fault,{
-					params:{
-						pro_id:this.formsdata.product.id
-					}
-				}).then(function(res){
-					if(res.data.rtn_no==100){
-							this.sub.fault.data=res.data.result;
-							console.log(this.sub.fault.data);
-							this.sub.fault.state=true
-					}else{
-						alert(res.data.rtn_msg)
-					}
-				},function(res){
-					console.log(res)
-				})
-			},
-			get_place_lists:function(){//获取地区
-				this.$http.get(this.api.service+this.api.place,{
-					params:{
-						parent_id:''
-					}
-				}).then(function(res){
-					if(res.data.rtn_no=="100"){
-							this.sub.place.data=res.data.result;
-							this.sub.place.state=true
-					}else{
-						alert(res.data.rtn_msg)
-					}
-				},function(res){
-					console.log(res)
-				})
+				document.documentElement.style.overflow='auto';
+				this.formsdata.order_date=data.date+" "+data.time;
 			},
 			check: function(index) {
 				this.formsdata.type=index.toString();
 				if(index == 1) {
 					this.state.repair = false;
-					this.state.pretend = true
+					this.state.pretend = true;
+					this.formsdata.type="1";
 				} else {
 					this.state.repair = true;
-					this.state.pretend = false
+					this.state.pretend = false;
+					this.formsdata.type="0";
 				}
 			},
 			send_vcode:function(){
@@ -338,7 +290,13 @@ export default {
 				},1000)
 			},
 			submit:function(){
-				this.$http.post(this.api.service+this.api.submit,{
+				console.log(this.formsdata.status.name);
+				if(this.formsdata.status.name=='需要安装'){
+					this.formsdata.status.val='0'
+				}else{
+					this.formsdata.status.val='1'
+				}
+				var post_data={
 					mobile:this.formsdata.mobile,	//是	string	手机号
 					Verifi_Code:this.formsdata.vcode,//是	string	验证码
 					pro_id:this.formsdata.product.id,	//是	string	产品类型
@@ -348,11 +306,11 @@ export default {
 					phonenumber:this.formsdata.user_mobile,	//是	string	联系人手机号
 					area_id:this.formsdata.user_place.id,	//是	string	区ID
 					detailaddress:this.formsdata.user_address,	//是	string	详细地址
-					status:'0',	//是	string	物流状态 0：需要安装1：货未到预约安装（默认为””）
+					status:this.formsdata.status.val,	//是	string	物流状态 0：需要安装1：货未到预约安装（默认为””）
 					style:this.formsdata.type,//是	string	0：报修1：报装
-//					appointtime:this.formsdata.order_date
-					appointtime:"2016-12-12 12:00-16:00"
-				}).then(function(res){
+					appointtime:this.formsdata.order_date
+				};
+				this.$http.post(this.api.service+this.api.submit,post_data).then(function(res){
 					if(res.data.rtn_no==100){
 							alert("提交成功")
 						}else{
@@ -376,6 +334,11 @@ export default {
 	padding-bottom: 100px;
 	background-color: #eee;
 	.weui-navbar{
+		position: fixed;
+		z-index: 99;
+		top: 0;
+		left: 0;
+		width: 100%;
 		&~.weui-tab__panel {
 	    padding-top: 50px;
 	    padding-bottom: 0;
@@ -386,7 +349,7 @@ export default {
 			}
 			.weui-textarea{
 				padding: 10px 15px;
-				height: 100px;
+				min-height: 30px;
 			}
 		}
 	}
