@@ -255,7 +255,7 @@ export default {
 					this.formsdata.type="0";
 				}
 			},
-			send_vcode:function(){
+			send_vcode:function(){//发送验证码
 				if(this.formsdata.mobile.length==11){
 					if(this.vcode_state=="发送验证码"){
 						this.$http.get(this.api.service+this.api.vcode,{
@@ -285,7 +285,7 @@ export default {
 						t--;
 						self.vcode_state="重新发送("+t+')';
 					}else{
-						self.vcode_state="请发送验证码";
+						self.vcode_state="发送验证码";
 						clearInterval(timer)
 					}
 				},1000)
@@ -334,7 +334,7 @@ export default {
 			post:function(){
 				var post_data={
 					mobile:this.formsdata.mobile,	//是	string	手机号
-					Verifi_Code:this.formsdata.vcode,//是	string	验证码
+					verify_code:this.formsdata.vcode,//是	string	验证码
 					pro_id:this.formsdata.product.id,	//是	string	产品类型
 					trouble_id:this.formsdata.fault.id,	//是	string	故障类型
 					trouble_detail:this.fault_des,	//是	string	故障描述
