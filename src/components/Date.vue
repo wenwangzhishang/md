@@ -168,11 +168,12 @@ export default {
 			height: 45px;
 			overflow: hidden;
 			text-align: center;
-			background-color: #333;
-			color: #fff;
+			background-color: #fff;
+			color: #2871e4;
 			h1{
 				font-size: 20px;
 				line-height: 45px;
+				font-weight: 400;
 			}
 			.back{
 				top: 0;
@@ -182,6 +183,7 @@ export default {
 				line-height: 45px;
 				background: url(../assets/images/back.png) no-repeat center;
 				background-size: 70%;
+				color: #2871e4;	
 			}
 		}
 		.demo-wrapper{
@@ -196,18 +198,19 @@ export default {
 				width: 100%;
 				.dwwr{
 					.dw-cal-btn-txt{
-						color: #1aad19;
+						color: #2871e4;
 					}
 					.dw-cal-days th{
-						color: #1aad19;
-						border-bottom: 1px solid #1aad19;
+						color: #2871e4;
+						border-bottom: 1px solid #2871e4;
 					}
 					.dw-cal-today{
-							color: #1aad19;
+							color: #2871e4;
 						}
 					.dw-sel{
 						.dw-i{
-							background-color: #1aad19;
+							background-color: #2871e4;
+							border-radius: 50%;
 						}
 					}
 				}

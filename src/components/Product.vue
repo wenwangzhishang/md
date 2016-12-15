@@ -28,8 +28,9 @@ export default {
 		return {
 			data:[],
 			api:{
-				service:'http://139.196.26.165/ShiTengApi/',//测试
-//				service:'http://weixin.56365.com/ShiTengApi/',
+				//				service:'http://139.196.26.165/ShiTengApi',//测试
+//				service:'http://weixin.56365.com/ShiTengApi',
+				service:'http://192.168.0.71:8080/ShiTengApi',//测试
 	    	product:'/service/product.do',
 			}
 		}
@@ -108,11 +109,12 @@ export default {
 			height: 45px;
 			overflow: hidden;
 			text-align: center;
-			background-color: #333;
-			color: #fff;
+			background-color: #fff;
+			color: #2871e4;
 			h1{
 				font-size: 20px;
 				line-height: 45px;
+				font-weight: 400;
 			}
 			.back{
 				top: 0;
@@ -120,7 +122,7 @@ export default {
 				width: 45px;
 				height: 100%;
 				line-height: 45px;
-				color: #fff;
+				color: #2871e4;
 				background: url(../assets/images/back.png) no-repeat center;
 				background-size: 70%;
 			}

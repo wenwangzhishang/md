@@ -16,7 +16,7 @@
 				<div class="weui-cells">
 	            	<a class="weui-cell weui-cell_access" @click.prevent="open_product">
 	            		<div class="weui-cell__hd">
-		                    <p>产品类型*</p>
+		                    <label class="weui-label">产品类型*</label>
 		                </div>
 		                <div class="weui-cell__bd">
 		                    <input type="text" name="" class="weui-input" readonly="true" v-model="formsdata.product.name">
@@ -25,7 +25,7 @@
 		            </a>
 		            <a class="weui-cell weui-cell_access" @click.prevent="open_fault" v-show="state.repair" v-cloak>
 		                <div class="weui-cell__hd">
-		                    <p>故障类型*</p>
+		                    <label class="weui-label">故障类型*</label>
 		                </div>
 		                <div class="weui-cell__bd">
 		                    <input type="text" name="" class="weui-input" readonly="true" v-model="formsdata.fault.name">
@@ -46,7 +46,7 @@
 		                    <label class="weui-label">手机号</label>
 		                </div>
 		                <div class="weui-cell__bd">
-		                    <input class="weui-input" type="tel" placeholder="请输入您的手机号" v-model="formsdata.mobile">
+		                    <input class="weui-input" type="tel" placeholder="请输入您的手机号" v-model="formsdata.mobile" autocomplete="on">
 		                </div>
 		                <div class="weui-cell__ft">
 		                    <button class="weui-vcode-btn" v-text="vcode_state" @click="send_vcode"></button>
@@ -73,7 +73,7 @@
 		            </div>
 		            <a class="weui-cell weui-cell_access" @click.prevent="open_place">
 	            		<div class="weui-cell__hd">
-		                    <p>所在地区*</p>
+		                  <label class="weui-label">所在地区*</label>
 		                </div>
 		                <div class="weui-cell__bd">
 		                    <textarea class="weui-textarea" placeholder="" readonly="readonly" v-model="formsdata.user_place.name"></textarea>
@@ -102,7 +102,7 @@
 				<div class="weui-cells">
 	            	<a class="weui-cell weui-cell_access" @click.prevent="open_date">
 	            		<div class="weui-cell__hd">
-		                    <p>预约时间*</p>
+		                    <label class="weui-label">预约时间*</label>
 		                </div>
 		                <div class="weui-cell__bd">
 		                    <input type="" name="" class="weui-input" placeholder="请选择预约服务时间" readonly="true" v-model="formsdata.order_date">
@@ -190,14 +190,18 @@ export default {
 				},//是否需要安装
 			},
 			api:{
-				service:'http://139.196.26.165/ShiTengApi/',//测试
-//				service:'http://weixin.56365.com/ShiTengApi/',
+//				service:'http://139.196.26.165/ShiTengApi',//测试
+//				service:'http://weixin.56365.com/ShiTengApi',
+				service:'http://192.168.0.71:8080/ShiTengApi',//测试
 	    	submit:'/service/repaiInstall.do',
 	    	product:'/service/product.do',
 	    	fault:'/service/trouble.do',
 	    	place:'/service/getAreaList.do',
 	    	vcode:'/user/getVerifyCode.do'
-	    }
+	   },
+	   router:{
+	   		suc_url:'http://www.51youdongxi.com/ShiTeng/register.html'
+	   }
     }
   },
 	methods: {
@@ -205,6 +209,7 @@ export default {
 //					document.documentElement.style.overflow='hidden';
 			},
 			open_product:function(){
+					this.formsdata.fault.name='';
 					this.sub.product.state=true;
 					document.documentElement.style.overflow='hidden';
 			},
@@ -264,7 +269,7 @@ export default {
 							}
 						},
 						).then(function(res){
-							if(res.data.rtn_no="100"){
+							if(res.data.rtn_no==100){
 								this.vcode_track()
 							}else{
 								alert(res.data.rtn_msg)
@@ -348,7 +353,9 @@ export default {
 				};
 				this.$http.post(this.api.service+this.api.submit,post_data).then(function(res){
 					if(res.data.rtn_no==100){
-							alert("提交成功")
+							window.localStorage.setItem('stuser_id',res.data.result.user_id);
+							window.alert("提交成功");
+							window.location.href=this.router.suc_url;
 						}else{
 							alert(res.data.rtn_msg)
 						}
@@ -380,11 +387,10 @@ export default {
 	    padding-bottom: 0;
 	    background-color: #eee;
 	    .weui-input{
-				text-align: center;
-				color: #333
+				color: #333;
 			}
 			.weui-textarea{
-				padding: 10px 15px;
+				padding: 0;
 				min-height: 30px;
 			}
 		}

@@ -6,6 +6,12 @@
 html,body{
 	width: 100%;
 	height: 100%;
+	font-size: 14px;
+}
+a,button,input {
+　　-webkit-tap-highlight-color: transparent;
+　　-moz-tap-highlight-color:transparent;
+　　outline: 0;
 }
 .fx{
 	position: fixed;
@@ -17,7 +23,7 @@ html,body{
 	position: absolute
 }
 .hd{
-	top: 0
+	top: 0;
 }
 .ft{
 	bottom: 0;
@@ -30,4 +36,44 @@ html,body{
 }
 .red{
 	color: red;
+}
+.weui-cells{
+	font-size: 1rem;
+}
+.weui-cell{
+	padding: 15px;
+}
+.weui-cell__bd{
+	/*padding: 0 15px;*/
+}
+.weui-navbar__item{
+	padding: 6px 0;
+	margin: 10px 5px;
+	border-radius: 6px;
+	border:1px solid #2871E4;
+	color: #2871E4;
+}
+.weui-navbar__item:first-child{
+	margin-right: 0;
+	border-radius: 6px 0 0 6px;
+}
+.weui-navbar__item:last-child{
+	margin-left: 0;
+	border-radius:0 6px 6px 0;
+}
+.weui-navbar__item:after{
+	width: 0;
+	border: 0;
+}
+.weui-navbar__item.weui-bar__item_on {
+    background-color: #2871e4;
+    color: #fff;
+}
+.weui-vcode-btn{
+	font-size: 1.1rem;
+	padding: 0 0 0 1rem;	
+}
+.weui-btn_mini{
+	font-size: 14px;
+	padding: 0 1rem;
 }
